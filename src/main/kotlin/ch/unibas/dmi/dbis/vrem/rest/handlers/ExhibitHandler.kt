@@ -43,7 +43,7 @@ class ExhibitHandler(private val reader: VREMReader, private val writer: VREMWri
         logger.debug { "Save exhibit request received." }
 
         // Map the JSON body to a Kotlin object.
-        val exhibitUpload = ctx.body<ExhibitUploadRequest>()
+        val exhibitUpload = ctx.bodyAsClass<ExhibitUploadRequest>()
 
         logger.debug { "Save exhibit.id=${exhibitUpload.exhibit.id} and for corpus ${exhibitUpload.artCollection}." }
         val path = writer.uploadExhibit(exhibitUpload)

@@ -25,7 +25,7 @@ class RequestContentHandler(private val docRoot: Path, private val cineastConfig
     }
 
     fun serveContentBody(ctx: Context) {
-        val path = ctx.queryParam("path", "")!!
+        val path = ctx.queryParam("path") ?: ""
         serve(ctx, path)
     }
 

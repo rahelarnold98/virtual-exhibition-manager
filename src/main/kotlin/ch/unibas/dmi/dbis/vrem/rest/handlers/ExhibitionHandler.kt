@@ -64,7 +64,7 @@ class ExhibitionHandler(private val reader: VREMReader, private val writer: VREM
      */
     fun saveExhibition(ctx: Context) {
         logger.debug { "Save exhibition request." }
-        val exhibition = ctx.body<Exhibition>()
+        val exhibition = ctx.bodyAsClass<Exhibition>()
         logger.debug { "Save exhibition with ID ${exhibition.id}." }
         if (writer.saveExhibition(exhibition)) {
             logger.debug { "Successfully saved exhibition with ID ${exhibition.id}." }
