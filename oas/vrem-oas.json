@@ -1,0 +1,909 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "description": "Virtual Exhibition Manager API",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/content": {
+      "get": {
+        "tags": [
+          "Content"
+        ],
+        "summary": "Retrieves exhibit content (e.g., an image) based on a url via query parameter.",
+        "operationId": "getApiContent",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/content/{path}": {
+      "get": {
+        "tags": [
+          "Content"
+        ],
+        "summary": "Retrieves exhibit content (e.g., an image) based on a url via path parameter.",
+        "operationId": "getApiContentWithPath",
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "description": "The path of the exhibit's content.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/exhibits/list": {
+      "get": {
+        "tags": [
+          "Exhibit"
+        ],
+        "summary": "Lists all exhibits stored in the database.",
+        "operationId": "getApiExhibitsList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListExhibitsResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/exhibits/save": {
+      "post": {
+        "tags": [
+          "Exhibit"
+        ],
+        "summary": "Stores an exhibit to the database.",
+        "operationId": "postApiExhibitsSave",
+        "requestBody": {
+          "description": "An exhibit object as JSON string.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Exhibit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/exhibitions/list": {
+      "get": {
+        "tags": [
+          "Exhibition"
+        ],
+        "summary": "Lists the IDs and names of all exhibitions stored in the database.",
+        "operationId": "getApiExhibitionsList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListExhibitionsResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/exhibitions/load/id/{id}": {
+      "get": {
+        "tags": [
+          "Exhibition"
+        ],
+        "summary": "Loads an exhibition by ID.",
+        "operationId": "getApiExhibitionsLoadIdWithId",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the exhibition to load.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Exhibition"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/exhibitions/load/name/{name}": {
+      "get": {
+        "tags": [
+          "Exhibition"
+        ],
+        "summary": "Loads an exhibition by name.",
+        "operationId": "getApiExhibitionsLoadNameWithName",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The name of the exhibition to load.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Exhibition"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/exhibitions/save": {
+      "post": {
+        "tags": [
+          "Exhibition"
+        ],
+        "summary": "Stores an exhibition to the database.",
+        "operationId": "postApiExhibitionsSave",
+        "requestBody": {
+          "description": "An exhibition object as JSON string.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Exhibition"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate/exhibition": {
+      "post": {
+        "tags": [
+          "Generation"
+        ],
+        "summary": "Generates a new, empty exhibition.",
+        "operationId": "postApiGenerateExhibition",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Exhibition"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate/room/random": {
+      "post": {
+        "tags": [
+          "Generation"
+        ],
+        "summary": "Generates a new room of random exhibits with the specified parameters.",
+        "operationId": "postApiGenerateRoomRandom",
+        "requestBody": {
+          "description": "The generation configuration object as JSON string.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RandomGenerationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate/room/similar": {
+      "post": {
+        "tags": [
+          "Generation"
+        ],
+        "summary": "Generates a new room of similar exhibits with the specified parameters.",
+        "operationId": "postApiGenerateRoomSimilar",
+        "requestBody": {
+          "description": "The generation configuration object as JSON string.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimilarityGenerationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate/room/som": {
+      "post": {
+        "tags": [
+          "Generation"
+        ],
+        "summary": "Generates a new room using self-organizing maps with the specified parameters.",
+        "operationId": "postApiGenerateRoomSom",
+        "requestBody": {
+          "description": "The generation configuration object as JSON string.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SomGenerationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Room"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ResponseMessage": {
+        "required": [
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Exhibit": {
+        "required": [
+          "_id",
+          "description",
+          "light",
+          "metadata",
+          "name",
+          "path",
+          "position",
+          "size",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "IMAGE",
+              "MODEL",
+              "VIDEO",
+              "MODEL_STRUCTURAL"
+            ]
+          },
+          "size": {
+            "$ref": "#/components/schemas/Vector3f"
+          },
+          "position": {
+            "$ref": "#/components/schemas/Vector3f"
+          },
+          "audio": {
+            "type": "string"
+          },
+          "light": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "ListExhibitsResponse": {
+        "required": [
+          "exhibits"
+        ],
+        "type": "object",
+        "properties": {
+          "exhibits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Exhibit"
+            }
+          }
+        }
+      },
+      "Vector3f": {
+        "required": [
+          "x",
+          "y",
+          "z"
+        ],
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "format": "float"
+          },
+          "y": {
+            "type": "number",
+            "format": "float"
+          },
+          "z": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      },
+      "ExhibitionSummary": {
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "ListExhibitionsResponse": {
+        "required": [
+          "exhibitions"
+        ],
+        "type": "object",
+        "properties": {
+          "exhibitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExhibitionSummary"
+            }
+          }
+        }
+      },
+      "Exhibition": {
+        "required": [
+          "_id",
+          "description",
+          "metadata",
+          "name",
+          "rooms"
+        ],
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Room"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Room": {
+        "required": [
+          "_id",
+          "ceiling",
+          "entryPoint",
+          "exhibits",
+          "floor",
+          "metadata",
+          "position",
+          "size",
+          "text",
+          "walls"
+        ],
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "floor": {
+            "type": "string"
+          },
+          "ceiling": {
+            "type": "string"
+          },
+          "position": {
+            "$ref": "#/components/schemas/Vector3f"
+          },
+          "size": {
+            "$ref": "#/components/schemas/Vector3f"
+          },
+          "entryPoint": {
+            "$ref": "#/components/schemas/Vector3f"
+          },
+          "ambient": {
+            "type": "string"
+          },
+          "exhibits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Exhibit"
+            }
+          },
+          "walls": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Wall"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Wall": {
+        "required": [
+          "color",
+          "direction",
+          "exhibits",
+          "texture"
+        ],
+        "type": "object",
+        "properties": {
+          "direction": {
+            "type": "string",
+            "enum": [
+              "NORTH",
+              "EAST",
+              "SOUTH",
+              "WEST"
+            ]
+          },
+          "texture": {
+            "type": "string"
+          },
+          "color": {
+            "$ref": "#/components/schemas/Vector3f"
+          },
+          "exhibits": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Exhibit"
+            }
+          }
+        }
+      },
+      "RandomGenerationRequest": {
+        "required": [
+          "idList",
+          "roomSpec",
+          "seed"
+        ],
+        "type": "object",
+        "properties": {
+          "roomSpec": {
+            "$ref": "#/components/schemas/RoomSpecification"
+          },
+          "idList": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "seed": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RoomSpecification": {
+        "required": [
+          "height",
+          "width"
+        ],
+        "type": "object",
+        "properties": {
+          "height": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "width": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SimilarityGenerationRequest": {
+        "required": [
+          "genType",
+          "objectId",
+          "roomSpec"
+        ],
+        "type": "object",
+        "properties": {
+          "roomSpec": {
+            "$ref": "#/components/schemas/RoomSpecification"
+          },
+          "genType": {
+            "type": "string"
+          },
+          "objectId": {
+            "type": "string"
+          }
+        }
+      },
+      "SomGenerationRequest": {
+        "required": [
+          "genType",
+          "idList",
+          "numEpochs",
+          "roomSpec",
+          "seed"
+        ],
+        "type": "object",
+        "properties": {
+          "roomSpec": {
+            "$ref": "#/components/schemas/RoomSpecification"
+          },
+          "genType": {
+            "type": "string"
+          },
+          "idList": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "seed": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "numEpochs": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    }
+  }
+}

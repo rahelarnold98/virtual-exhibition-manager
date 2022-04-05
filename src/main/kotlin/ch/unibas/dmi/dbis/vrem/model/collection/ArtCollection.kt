@@ -1,10 +1,9 @@
 package ch.unibas.dmi.dbis.vrem.model.collection
 
 import ch.unibas.dmi.dbis.vrem.model.exhibition.Exhibit
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.bson.types.ObjectId
+import org.litote.kmongo.newId
 
 /**
  * Art collection object.
@@ -16,9 +15,8 @@ import org.bson.types.ObjectId
  */
 @Serializable
 data class ArtCollection(
-    @Contextual
     @SerialName("_id")
-    val id: String = ObjectId().toString(),
+    val id: String = newId<ArtCollection>().toString(),
     val name: String,
     val exhibits: List<Exhibit> = mutableListOf(),
     val metadata: Map<String, String> = mutableMapOf()

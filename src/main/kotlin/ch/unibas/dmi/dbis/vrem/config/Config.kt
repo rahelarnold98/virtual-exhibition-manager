@@ -12,7 +12,11 @@ import java.io.File
  * @property cineast The Cineast instance configuration object.
  */
 @Serializable
-data class Config(val database: DatabaseConfig, val server: WebServerConfig, val cineast: CineastConfig) {
+data class Config(
+    val database: DatabaseConfig,
+    val server: WebServerConfig,
+    val cineast: CineastConfig,
+) {
 
     companion object {
 

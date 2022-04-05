@@ -5,7 +5,10 @@ import ch.unibas.dmi.dbis.vrem.model.exhibition.Exhibit
 import ch.unibas.dmi.dbis.vrem.model.exhibition.Exhibition
 import ch.unibas.dmi.dbis.vrem.model.exhibition.ExhibitionSummary
 import com.mongodb.client.MongoDatabase
-import org.litote.kmongo.*
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.projection
 
 /**
  * MongoDB reader for VREM.
@@ -31,7 +34,7 @@ class VREMReader(database: MongoDatabase) : VREMDao(database) {
      * @param name The name of the exhibition.
      * @return The exhibition as an object.
      */
-    fun getExhibition(name: String): Exhibition {
+    fun getExhibitionByName(name: String): Exhibition {
         val col = getExhibitionCollection()
         return col.findOne(Exhibition::name eq name)!!
     }
@@ -42,7 +45,7 @@ class VREMReader(database: MongoDatabase) : VREMDao(database) {
      * @param id The ID of the exhibition.
      * @return The exhibition as an object.
      */
-    fun getExhibition(id: Id<Exhibition>): Exhibition {
+    fun getExhibitionById(id: String): Exhibition {
         val col = getExhibitionCollection()
         return col.findOne { Exhibition::id eq id }!!
     }

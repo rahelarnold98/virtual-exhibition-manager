@@ -5,11 +5,10 @@ logs/
 out/
 bin/
 
-## keystore
+# Keystore
 *.pem
 *.jks
 *.p12
-
 
 ### Kotlin ###
 # Compiled class file

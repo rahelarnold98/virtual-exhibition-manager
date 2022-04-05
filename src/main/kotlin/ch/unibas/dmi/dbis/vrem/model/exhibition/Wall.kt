@@ -3,8 +3,6 @@ package ch.unibas.dmi.dbis.vrem.model.exhibition
 import ch.unibas.dmi.dbis.vrem.model.math.Vector3f
 import kotlinx.serialization.Serializable
 
-// TODO Consider adding a path to this if directions are not limited to cardinal directions anymore.
-
 /**
  * Object representation of exhibition room walls.
  *

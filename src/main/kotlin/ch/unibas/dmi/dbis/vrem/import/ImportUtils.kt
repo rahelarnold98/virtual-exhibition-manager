@@ -15,11 +15,6 @@ object ImportUtils {
     const val WALL_CONFIG_FILE = "wall-config.json"
     const val ROOM_CONFIG_FILE = "room-config.json"
 
-    const val NORTH_WALL_NAME = "north"
-    const val EAST_WALL_NAME = "east"
-    const val SOUTH_WALL_NAME = "south"
-    const val WEST_WALL_NAME = "west"
-
     const val JSON_EXTENSION = "json"
     const val JPG_EXTENSION = "jpg"
     const val JPEG_EXTENSION = "jpeg"
@@ -29,23 +24,29 @@ object ImportUtils {
     val IMAGE_FILE_EXTENSIONS = listOf(JPEG_EXTENSION, JPG_EXTENSION, PNG_EXTENSION, BMP_EXTENSION)
 
     /**
-     * Calculates the room position depending on the number of siblings.
-     * As of now, the room X coordinate is simply the room number.
+     * Calculates the room position depending on the number of siblings, arranging rooms in a line.
      *
      * @param room The room to calculate the position for.
      * @param siblings The list of all current rooms.
      * @return The vector of the room's position.
      */
     fun calculateRoomPosition(room: Room, siblings: List<Room>): Vector3f {
-        return Vector3f(siblings.size, 0, 0)
+        // Automated room position calculation: Use origin if unspecified.
+        if (siblings.isEmpty()) {
+            return Vector3f(0.0f, 0.0f, 0.0f)
+        }
+
+        val offset = 1.0f
+        val last = siblings.last()
+        val dist = last.position.x + 0.5 * last.size.x + 0.5 * room.size.x + offset
+
+        return Vector3f(dist, 0.0f, 0.0f)
     }
 
     /**
      * Calculates the exhibit position on the wall depending on the number of siblings that have already been added.
      * Starts on the left-hand side of the wall and fills up towards the right.
      * Note that, if there are too many exhibits, the images can get placed outside of the wall.
-     *
-     * TODO Improve automatic position calculation.
      *
      * @param exhibit The exhibit to calculate the position for.
      * @param siblings The siblings of the exhibit on the same wall.
@@ -70,7 +71,7 @@ object ImportUtils {
     }
 
     fun calculateExhibitSize(exhibitFile: ByteArray, exhibit: Exhibit, defaultLongSide: Float) {
-        // Load image as stream so we don't have to load the entire thing.
+        // Load image as stream and only check for width/height we don't have to load the entire thing.
         val imageStream = ImageIO.createImageInputStream(ByteArrayInputStream(exhibitFile))
 
         val reader = ImageIO.getImageReaders(imageStream).next()

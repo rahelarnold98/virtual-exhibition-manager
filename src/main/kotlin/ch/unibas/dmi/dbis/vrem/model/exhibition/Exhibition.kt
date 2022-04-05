@@ -1,10 +1,8 @@
 package ch.unibas.dmi.dbis.vrem.model.exhibition
 
-import kotlinx.serialization.Contextual
+import io.swagger.v3.oas.annotations.media.Schema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonNames
-import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.*
 
@@ -15,17 +13,18 @@ import java.util.*
  * @property name The name of the exhibition.
  * @property description The description of the exhibition.
  * @property rooms A list of rooms that the exhibition consists of.
+ * @property metadata Miscellaneous metadata for the exhibition for various purposes.
  */
 
 @Serializable
 data class Exhibition(
-    @Contextual
     @SerialName("_id")
-    @JsonNames("id", "_id")
-    val id: Id<Exhibition> = newId(),
+    @Schema(name = "_id") // OpenAPI spec.
+    val id: String = newId<Exhibition>().toString(),
     val name: String,
     val description: String = "",
-    val rooms: MutableList<Room> = mutableListOf()
+    val rooms: MutableList<Room> = mutableListOf(),
+    val metadata: MutableMap<String, String> = mutableMapOf()
 ) {
 
     /**
@@ -52,10 +51,10 @@ data class Exhibition(
 
         rooms.forEach { r ->
             exhibits.addAll(r.exhibits)
-            exhibits.addAll(r.getNorth().exhibits)
-            exhibits.addAll(r.getEast().exhibits)
-            exhibits.addAll(r.getSouth().exhibits)
-            exhibits.addAll(r.getWest().exhibits)
+
+            r.walls.forEach { w ->
+                exhibits.addAll(w.exhibits)
+            }
         }
 
         return Collections.unmodifiableList(exhibits)

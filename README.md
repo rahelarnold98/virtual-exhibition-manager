@@ -2,8 +2,8 @@
 
 [![Build Status](https://travis-ci.org/VIRTUE-DBIS/virtual-exhibition-manager.svg?branch=master)](https://travis-ci.org/VIRTUE-DBIS/virtual-exhibition-manager)
 
-The Virtual Reality Exhibition Manager (VREM) is a tool that allows for configuration, storage of and access to VR
-exhibition definitions.   
+The Virtual Reality Exhibition Manager (VREM) is a tool that allows for the configuration, generation, storage of and
+access to VR exhibition definitions.   
 While VREM acts as a back end, the exhibitions can be viewed in
 the [Virtual Exhibition Presenter (VREP)](https://github.com/dbisUnibas/virtual-exhibition-presenter) (Unity).  
 For the Angular UI see [VREM-UI](https://github.com/sauterl/virtual-exhibition-manager-ui). It has been created as part
@@ -12,25 +12,30 @@ of the [Open Cultural Data Hackathon 2018](http://make.opendata.ch/wiki/event:20
 ## Prerequisites
 
 Below is a very shortened version of
-the [setup guide](https://github.com/VIRTUE-DBIS/virtual-exhibition-presenter/wiki/Setup-Guide) on how to setup VREM.
+the [setup guide](https://github.com/VIRTUE-DBIS/virtual-exhibition-presenter/wiki/Setup-Guide) on how to set up VREM.
 
 ### System dependencies
 
-* Git
 * JDK 11 or higher
 * You will require [MongoDB](https://docs.mongodb.com/manual/installation/) as storage engine. We recommend
   using [Docker](https://www.docker.com). If you have installed docker, you can start a new container
   using `docker run --name vrem-container -d -p 27017:27017 mongo`. If you already have a container, restart it
-  using `docker start mongo`. If you're on a unix-system, use the `launch_db.sh` script.
+  using `docker start mongo`. If you are on a unix-system, use the `launch_db.sh` script.
+* If you want VREM to be able to dynamically generate exhibition rooms for an image collection, you also need a running
+  instance of [Cineast](https://github.com/vitrivr/cineast) and
+  [Cottontail DB](https://github.com/vitrivr/cottontaildb). Consult
+  the [setup guide](https://github.com/VIRTUE-DBIS/virtual-exhibition-presenter/wiki/Setup-Guide) for additional
+  information.
 
 ## Building VREM
 
-VREM can be built using [Gradle](http://gradle.org/). Building and running it is as simple as:
+VREM can be built using [Gradle](http://gradle.org/):
 
 ```
- ./gradlew clean distZip
- unzip build/distributions/virtual-exhibition-manager-$
- virtual-exhibition-manager-$/bin/virtual-exhibition-manager <command>
+ ./gradlew clean deploy
+ cd build/libs
+ java -jar virtual-exhibition-manager-3.0.0-SNAPSHOT.jar
+ java -jar virtual-exhibition-manager-3.0.0-SNAPSHOT.jar <command>
  ```
 
 Make sure you have the correct working directory set so VREM can properly import exhibitions and serve content.
@@ -41,7 +46,7 @@ Before starting, you should adapt the configurations in your config.json file (s
 After doing so, you may serve stored exhibitions by running VREM with the following command:
 
 ```
- virtual-exhibition-manager-$/bin/virtual-exhibition-manager server -c /path/to/your/config.json
+ java -jar virtual-exhibition-manager-3.0.0-SNAPSHOT.jar server -c /path/to/your/config.json
 ```
 
 ## Importing an exhibition
@@ -54,8 +59,8 @@ The following command imports a collection from the `data/import/my_exhibition` 
 import-folder --config=config.json --path=data/import/my_exhibition --name=demo
 ```
 
-Since the images themselves are not stored in the database, VREP will maintain a folder containing the exhibition images
-in `data/` (relative to VREM).
+Since the image and ambient audio files are not stored in the database, VREP will maintain a folder containing the
+exhibition images in `data/` (relative to VREM).
 
 For an exhibition example, consult the repository
 at [https://github.com/VIRTUE-DBIS/vre-mixnhack19](https://github.com/VIRTUE-DBIS/vre-mixnhack19).

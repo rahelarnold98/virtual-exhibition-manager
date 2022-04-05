@@ -19,11 +19,11 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Logger name="ch.unibas.dmi.dbis.vrem" level="TRACE" additivity="false">
+        <Logger name="ch.unibas.dmi.dbis.vrem" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
         </Logger>
-        <Root level="ERROR">
+        <Root level="INFO">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
         </Root>

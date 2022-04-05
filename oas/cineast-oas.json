@@ -14,10 +14,6 @@
     },
     "version" : "v1"
   },
-  "servers" : [ {
-    "url" : "http://localhost:4567/",
-    "description" : "Cineast API Address"
-  } ],
   "tags" : [ {
     "name" : "/api/v1",
     "description" : "Cineast Default"
@@ -129,7 +125,7 @@
         }
       }
     },
-    "/api/v1/find/metadata/in/{domain}/by/id/{domain}" : {
+    "/api/v1/find/metadata/in/{domain}/by/id/{id}" : {
       "get" : {
         "tags" : [ "Metadata" ],
         "summary" : "Find metadata for specific object id in given domain",
@@ -538,6 +534,80 @@
         }
       }
     },
+    "/api/v1/find/feature/all/by/category/{category}" : {
+      "post" : {
+        "tags" : [ "Metadata" ],
+        "summary" : "Find features for the given category for all (or specific) IDs",
+        "description" : "Find features for the given category for all (or specific) IDs",
+        "operationId" : "findFeaturesByCategory",
+        "parameters" : [ {
+          "name" : "category",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IdList"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/FeaturesByCategoryQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/find/feature/all/by/entity/{entity}" : {
+      "post" : {
+        "tags" : [ "Metadata" ],
+        "summary" : "Find features for the given entity name for all (or specific) IDs",
+        "description" : "Find features for the given entity name for all (or specific) IDs",
+        "operationId" : "findFeaturesByEntity",
+        "parameters" : [ {
+          "name" : "entity",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IdList"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/FeaturesByEntityQueryResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/find/feature/text/by/{id}/{category}" : {
       "get" : {
         "tags" : [ "Metadata" ],
@@ -627,7 +697,7 @@
         "tags" : [ "Metadata" ],
         "summary" : "Find tag ids for the given id",
         "description" : "Find tag ids for the given id",
-        "operationId" : "findTagsById",
+        "operationId" : "findTagInformationById",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -997,7 +1067,7 @@
           },
           "messageType" : {
             "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       },
@@ -1046,15 +1116,15 @@
               "type" : "string"
             }
           },
-          "messageType" : {
-            "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
-          },
           "idList" : {
             "type" : "array",
             "items" : {
               "type" : "string"
             }
+          },
+          "messageType" : {
+            "type" : "string",
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       },
@@ -1104,7 +1174,7 @@
           },
           "messageType" : {
             "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       },
@@ -1147,7 +1217,7 @@
           },
           "messageType" : {
             "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       },
@@ -1176,11 +1246,11 @@
             "type" : "number",
             "format" : "float"
           },
-          "sequenceNumber" : {
+          "count" : {
             "type" : "integer",
             "format" : "int32"
           },
-          "count" : {
+          "sequenceNumber" : {
             "type" : "integer",
             "format" : "int32"
           }
@@ -1200,7 +1270,7 @@
           },
           "messageType" : {
             "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       },
@@ -1270,16 +1340,16 @@
           "distanceIfEmpty" : {
             "$ref" : "#/components/schemas/QueryConfig"
           },
-          "normIfEmpty" : {
-            "$ref" : "#/components/schemas/QueryConfig"
-          },
-          "distanceWeightsIfEmpty" : {
+          "correspondenceFunctionIfEmpty" : {
             "$ref" : "#/components/schemas/QueryConfig"
           },
           "correspondenceFunction" : {
             "$ref" : "#/components/schemas/CorrespondenceFunction"
           },
-          "correspondenceFunctionIfEmpty" : {
+          "normIfEmpty" : {
+            "$ref" : "#/components/schemas/QueryConfig"
+          },
+          "distanceWeightsIfEmpty" : {
             "$ref" : "#/components/schemas/QueryConfig"
           },
           "rawResultsPerModule" : {
@@ -1293,7 +1363,7 @@
         "properties" : {
           "type" : {
             "type" : "string",
-            "enum" : [ "IMAGE", "AUDIO", "MOTION", "MODEL3D", "LOCATION", "TIME", "TEXT", "TAG", "SEMANTIC", "ID", "BOOLEAN" ]
+            "enum" : [ "IMAGE", "AUDIO", "MOTION", "MODEL3D", "LOCATION", "PARAMETERISED_LOCATION", "TIME", "TEXT", "TAG", "SEMANTIC", "ID", "BOOLEAN" ]
           },
           "data" : {
             "type" : "string",
@@ -1328,7 +1398,7 @@
           },
           "messageType" : {
             "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       },
@@ -1353,7 +1423,7 @@
           },
           "messageType" : {
             "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       },
@@ -1402,6 +1472,49 @@
             }
           },
           "elementID" : {
+            "type" : "string"
+          }
+        }
+      },
+      "FeaturesByCategoryQueryResult" : {
+        "type" : "object",
+        "properties" : {
+          "queryId" : {
+            "type" : "string"
+          },
+          "featureMap" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "array",
+              "items" : {
+                "type" : "object",
+                "additionalProperties" : {
+                  "type" : "object"
+                }
+              }
+            }
+          },
+          "category" : {
+            "type" : "string"
+          }
+        }
+      },
+      "FeaturesByEntityQueryResult" : {
+        "type" : "object",
+        "properties" : {
+          "queryId" : {
+            "type" : "string"
+          },
+          "featureMap" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "object"
+              }
+            }
+          },
+          "entityName" : {
             "type" : "string"
           }
         }
@@ -1494,7 +1607,7 @@
           },
           "messageType" : {
             "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       },
@@ -1529,7 +1642,7 @@
           },
           "messageType" : {
             "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       },
@@ -1561,7 +1674,7 @@
           },
           "messageType" : {
             "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       },
@@ -1620,7 +1733,7 @@
           },
           "messageType" : {
             "type" : "string",
-            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY" ]
+            "enum" : [ "PING", "Q_SIM", "Q_MLT", "Q_NESEG", "Q_SEG", "M_LOOKUP", "Q_TEMPORAL", "SESSION_START", "QR_START", "QR_END", "QR_ERROR", "QR_OBJECT", "QR_METADATA_O", "QR_METADATA_S", "QR_SEGMENT", "QR_SIMILARITY", "QR_TEMPORAL" ]
           }
         }
       }

@@ -1,7 +1,7 @@
 package ch.unibas.dmi.dbis.vrem
 
 import ch.unibas.dmi.dbis.vrem.import.ExhibitionFolderImporter
-import ch.unibas.dmi.dbis.vrem.rest.APIEndpoint
+import ch.unibas.dmi.dbis.vrem.rest.API
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -21,4 +21,4 @@ class VREM : CliktCommand(name = "vrem", help = "This is the virtual-exhibition-
  * @param args The (command line) arguments for the CLI parser.
  */
 @ExperimentalSerializationApi
-fun main(args: Array<String>) = VREM().subcommands(APIEndpoint(), ExhibitionFolderImporter()).main(args)
+fun main(args: Array<String>) = VREM().subcommands(API(), ExhibitionFolderImporter()).main(args)

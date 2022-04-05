@@ -1,5 +1,6 @@
 package ch.unibas.dmi.dbis.vrem.model.math
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import kotlinx.serialization.Serializable
 
 /**
@@ -29,6 +30,7 @@ data class Vector3f(val x: Float = 0f, val y: Float = 0f, val z: Float = 0f) {
      *
      * @return True if the vector object is NaN, false otherwise.
      */
+    @JsonIgnore // Due to OpenAPI basically requiring Jackson.
     fun isNaN(): Boolean {
         return equals(NaN)
     }
@@ -54,7 +56,7 @@ data class Vector3f(val x: Float = 0f, val y: Float = 0f, val z: Float = 0f) {
     }
 
     override fun toString(): String {
-        return "Vector3f(x=$x, y=$y, z=$z)"
+        return "Vector3f($x, $y, $z)"
     }
 
 }

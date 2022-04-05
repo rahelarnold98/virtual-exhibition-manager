@@ -1,9 +1,9 @@
 package ch.unibas.dmi.dbis.vrem.database
 
-import ch.unibas.dmi.dbis.vrem.model.api.request.ExhibitUploadRequest
 import ch.unibas.dmi.dbis.vrem.model.collection.ArtCollection
 import ch.unibas.dmi.dbis.vrem.model.exhibition.Exhibit
 import ch.unibas.dmi.dbis.vrem.model.exhibition.Exhibition
+import ch.unibas.dmi.dbis.vrem.rest.requests.ExhibitUploadRequest
 import com.mongodb.client.MongoDatabase
 import mu.KotlinLogging
 import org.litote.kmongo.eq
@@ -37,8 +37,6 @@ class VREMWriter(database: MongoDatabase) : VREMDao(database) {
     /**
      * Store a single exhibit in the exhibit corpus.
      * Creates the collection if it doesn't exist.
-     *
-     * TODO Fix this after refactoring collection storage handling.
      *
      * @param exhibitUploadRequest A request for the object to upload.
      * @return The path of the uploaded exhibit.

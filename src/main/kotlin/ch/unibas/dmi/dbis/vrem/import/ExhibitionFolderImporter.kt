@@ -14,9 +14,13 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.float
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import org.litote.kmongo.id.serialization.IdKotlinXSerializationModule
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
+import java.util.stream.Stream
+import kotlin.io.path.extension
+import kotlin.io.path.isDirectory
+import kotlin.io.path.relativeTo
 import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
@@ -26,44 +30,53 @@ private val logger = KotlinLogging.logger {}
  * To be used directly as CLI command; the exhibition should include everything as in the
  * [sample exhibition](git@github.com:VIRTUE-DBIS/vre-mixnhack19.git).
  */
-class ExhibitionFolderImporter : CliktCommand(name = "import-folder", help = "Imports a folder-based exhibition") {
+class ExhibitionFolderImporter : CliktCommand(name = "import-folder", help = "Imports a folder-based exhibition.") {
 
-    val exhibitionPath by option("-p", "--path", help = "Path to the exhibition root folder").required()
+    val exhibitionPath by option(
+        "-p",
+        "--path",
+        help = "Path to the exhibition root folder (where the room folders reside)."
+    ).required()
+
     val config by option(
         "-c",
         "--config",
-        help = "Relative of full path to the config file to be used"
-    ).required()
-    val clean by option("--clean", help = "Remove old exhibitions with the same name").flag(
-        "--keep",
-        default = false
-    )
+        help = "Path to the configuration file to use (defaults to config.json)."
+    ).default("config.json")
+
+    val clean by option(
+        "--clean", help = "Overrides old exhibitions with the same name from the database."
+    ).flag("--keep", default = false)
+
     val exhibitionDescription by option(
         "-d",
         "--description",
-        help = "Description of the exhibition"
+        help = "Description of the exhibition (defaults to empty)."
     ).default("")
+
     val name by option(
         "-n",
         "--name",
-        help = "The name of the exhibition. Shall be unique"
-    ).default("default-name")
+        help = "The name of the exhibition (must be unique)."
+    ).default("")
+
     val ignore by option(
         "--ignore",
-        help = "An ignore prefix to ignore folders and not treat them as a room folder"
+        help = "A prefix for folders to ignore instead of treating them as a room folders (defaults to __)."
     ).default("__")
+
     val defaultLongSide: Float by option(
         "--default-long-side",
-        help = "The length of the long side of an image in meters"
+        help = "The length of the longer side of an image in meters (defaults to 2.0)."
     ).float().default(2f)
 
     private lateinit var exhibition: Exhibition
-    private lateinit var storageRoot: File
     private lateinit var importRoot: File
+    private lateinit var storageRoot: File
 
     companion object {
         private val json = Json {
-            serializersModule = IdKotlinXSerializationModule
+//            serializersModule = IdKotlinXSerializationModule
             encodeDefaults = true
         }
     }
@@ -72,10 +85,10 @@ class ExhibitionFolderImporter : CliktCommand(name = "import-folder", help = "Im
         // Get config and a reader/writer for the database.
         val config = Config.readConfig(this.config)
         val (reader, writer) = VREMDao.getDAOs(config.database)
-        val exhibitionFolder = File(exhibitionPath)
+        this.importRoot = File(exhibitionPath)
 
         // Checks: Require exhibition folder to exist and no other exhibition with the same name to exist.
-        if (!exhibitionFolder.exists() and !exhibitionFolder.isDirectory) {
+        if (!importRoot.exists() and !importRoot.isDirectory) {
             logger.error { "--path argument has to point to an existing directory!" }
             exitProcess(-1)
         }
@@ -95,40 +108,44 @@ class ExhibitionFolderImporter : CliktCommand(name = "import-folder", help = "Im
         this.exhibition = Exhibition(name = name, description = exhibitionDescription)
 
         // Roots for import and storage.
-        this.storageRoot = File(config.server.documentRoot)
-        this.importRoot = File(exhibitionPath)
+        this.storageRoot = File(config.server.documentRoot).resolve(this.exhibition.id)
+
+        val validFolders = this.importRoot.listFiles()!!.filter { !it.nameWithoutExtension.startsWith(ignore) }
 
         // Determine path to copy media files to after importing.
 
         logger.info { "Starting import exhibition at ${this.importRoot}." }
 
         // Try to add every folder as a new room to the previously created exhibition object.
-        this.importRoot.listFiles()?.filter { !it.nameWithoutExtension.startsWith(ignore) }
-            ?.forEach { exhibition.addRoom(importRoom(it, exhibition.rooms)) }
+        validFolders.forEach { exhibition.addRoom(importRoom(it, exhibition.rooms)) }
 
         logger.info { "Writing exhibition entry to MongoDB..." }
 
         // Create MongoDB entry.
         writer.saveExhibition(exhibition)
 
-        logger.info { "Copying media files..." }
+        logger.info { "Copying files..." }
 
-        // Copy local files.
-        exhibition.obtainExhibits().forEach {
-            // Paths to copy to/from.
-            val srcPath = importRoot.resolve(File(it.path))
-            val targetPath = storageRoot.resolve(exhibition.id.toString()).resolve(it.path)
-
-            // Create directories if they don't exist.
-            Files.createDirectories(targetPath.parentFile.toPath())
-
-            // Copy the files.
-            Files.copy(srcPath.toPath(), targetPath.toPath())
-        }
-
-        // TODO Handle any errors upon MongoDB import or file copy.
+        validFolders.forEach { copyRoomFolder(it.toPath()) }
 
         logger.info { "Finished import." }
+    }
+
+    private fun copyRoomFolder(folder: Path) {
+        // Get everything that's not JSON.
+        val files: Stream<Path> =
+            Files.walk(folder).filter { !it.isDirectory() && it.extension != ImportUtils.JSON_EXTENSION }
+
+        // Copy everything.
+        for (f in files) {
+            val targetPath = storageRoot.toPath().resolve(f.relativeTo(importRoot.toPath()))
+
+            // Create directories if they don't exist.
+            Files.createDirectories(targetPath.parent)
+
+            // Copy the files.
+            Files.copy(f, targetPath)
+        }
     }
 
     /**
@@ -169,10 +186,9 @@ class ExhibitionFolderImporter : CliktCommand(name = "import-folder", help = "Im
 
         val room = readRoomConfigOrCreateNew(roomFile)
 
-        room.setNorth(importWall(Direction.NORTH, roomFile.resolve(ImportUtils.NORTH_WALL_NAME)))
-        room.setEast(importWall(Direction.EAST, roomFile.resolve(ImportUtils.EAST_WALL_NAME)))
-        room.setSouth(importWall(Direction.SOUTH, roomFile.resolve(ImportUtils.SOUTH_WALL_NAME)))
-        room.setWest(importWall(Direction.WEST, roomFile.resolve(ImportUtils.WEST_WALL_NAME)))
+        for (dir in Direction.values()) {
+            room.setWall(dir, importWall(dir, roomFile.resolve(dir.toString().lowercase())))
+        }
 
         room.position = ImportUtils.calculateRoomPosition(room, siblings)
 
@@ -210,12 +226,18 @@ class ExhibitionFolderImporter : CliktCommand(name = "import-folder", help = "Im
 
         logger.debug { "Looking for exhibit configuration at $configFile." }
 
-        val exhibitPath = exhibitFile.relativeTo(importRoot).toString().replace('\\', '/') // In case its Windows.
+        val exhibitPath =
+            this.exhibition.id + "/" + exhibitFile.relativeTo(importRoot).toString().replace('\\', '/')
 
         return if (configFile.exists()) {
             val exhibit = json.decodeFromString(Exhibit.serializer(), configFile.readText())
 
             exhibit.path = exhibitPath
+
+            if (exhibit.audio != null) {
+                exhibit.audio = exhibitPath.substringBeforeLast("/") + "/" + exhibit.audio
+            }
+
             exhibit
         } else {
             Exhibit(exhibitFile.nameWithoutExtension, exhibitPath, CulturalHeritageObject.Companion.CHOType.IMAGE)
@@ -258,7 +280,7 @@ class ExhibitionFolderImporter : CliktCommand(name = "import-folder", help = "Im
         return if (roomConfigFile.exists()) {
             json.decodeFromString(Room.serializer(), roomConfigFile.readText())
         } else {
-            Room(room.name)
+            Room(text = room.name)
         }
     }
 

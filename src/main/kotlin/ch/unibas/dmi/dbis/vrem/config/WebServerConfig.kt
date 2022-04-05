@@ -6,11 +6,18 @@ import kotlinx.serialization.Serializable
  * Configuration of the REST endpoint.
  *
  * @property documentRoot The document root path as a string.
- * @property httpPort The port of the endpoint.
- * @property httpPort The port of the https endpoint.
- * @property enableSsl if ssl / https should be enabled
- * @property keystorePassword password for the keystore
- * @property keystorePath path for the keystore
+ * @property httpPort The HTTP port of the endpoint.
+ * @property httpsPort The HTTPS port of the endpoint.
+ * @property enableSsl Whether to enable SSL (HTTPS) or not.
+ * @property keystorePath The path to find the keystore for SSL on.
+ * @property keystorePassword The password for the keystore.
  */
 @Serializable
-data class WebServerConfig(val documentRoot: String, val httpPort: Int, val httpsPort: Int, val enableSsl: Boolean, val keystorePath: String, val keystorePassword: String)
+data class WebServerConfig(
+    val documentRoot: String,
+    val httpPort: Int,
+    val httpsPort: Int,
+    val enableSsl: Boolean,
+    val keystorePath: String,
+    val keystorePassword: String
+)
