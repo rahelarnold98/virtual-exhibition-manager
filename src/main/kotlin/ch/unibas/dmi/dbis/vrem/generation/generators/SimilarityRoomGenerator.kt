@@ -78,18 +78,14 @@ class SimilarityRoomGenerator(
     }
 
     override fun genRoom(): Room {
-        val containers = mutableListOf<QueryComponent>()
+        val containers = mutableListOf<QueryTerm>()
         containers.add(
-            QueryComponent(
-                mutableListOf(
                     QueryTerm(
                         QueryTerm.Type.ID,
                         genConfig.objectId,
                         mutableListOf(category)
                     )
                 )
-            )
-        )
 
         val query = SimilarityQuery(containers) // Omit messageType or the query will fail.
 
