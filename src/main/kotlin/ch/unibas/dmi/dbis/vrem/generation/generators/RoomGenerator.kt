@@ -15,8 +15,10 @@ import kotlin.math.max
  * @property cineastHttp Cineast HTTP client to obtain data.
  */
 abstract class RoomGenerator(
-    val cineastHttp: CineastHttp
+        val cineastHttp: CineastHttp,
+        val minWidth: Double = 5.0
 ) : ExhibitionGenerator() {
+
 
     abstract val roomText: String
 
@@ -87,9 +89,9 @@ abstract class RoomGenerator(
      * @return A list of walls with exhibits and their positions assigned.
      */
     protected fun exhibitListToWalls(
-        dims: IntArray,
-        exhibitList: MutableList<Exhibit>,
-        ignoreEmptyExhibits: Boolean = true
+            dims: IntArray,
+            exhibitList: MutableList<Exhibit>,
+            ignoreEmptyExhibits: Boolean = true
     ): MutableList<Wall> {
         val walls = wallEnumToList()
 
@@ -107,7 +109,7 @@ abstract class RoomGenerator(
                         continue
                     }
 
-                    exhibit.position = getWallPositionByCoords(i, j)
+                    exhibit.position = getWallPositionByCoords(i, j, dims[1] / walls.size == 1)
 
                     walls[w].exhibits.add(exhibit)
                 }
@@ -184,18 +186,28 @@ abstract class RoomGenerator(
      * @return A vector holding the calculated position.
      */
     fun getWallPositionByCoords(
-        row: Int,
-        column: Int,
-        padding: Double = 1.5, // Towards other exhibits and walls.
-        baseHeight: Double = 2.0, // Offset towards the ground.
-        longerSideLength: Double = 2.0 // Maximum length/height of an exhibit.
+            row: Int,
+            column: Int,
+            minSize: Boolean = false,
+            padding: Double = 1.5, // Towards other exhibits and walls.
+            baseHeight: Double = 2.0, // Offset towards the ground.
+            longerSideLength: Double = 2.0 // Maximum length/height of an exhibit.
     ): Vector3f {
         // TODO Let the user define the padding/base height/longer side length and put it in a config.
+
+        if (minSize) {
+            return Vector3f(
+                    (minWidth / 2),
+                    (longerSideLength + padding) * row + baseHeight,
+                    0.0
+            )
+        }
         return Vector3f(
-            (longerSideLength + padding) * column + padding,
-            (longerSideLength + padding) * row + baseHeight,
-            0.0
+                (longerSideLength + padding) * column + padding,
+                (longerSideLength + padding) * row + baseHeight,
+                0.0
         )
+
     }
 
     /**
@@ -231,6 +243,14 @@ abstract class RoomGenerator(
 
             yDimLen = max(yDimLen, lastPos.y.toDouble() + baseHeight)
         }
+
+        // Set a minimum room size
+        if (xDimLen < minWidth) {
+            xDimLen = minWidth
+        };
+        if (zDimLen < minWidth) {
+            zDimLen = minWidth
+        };
 
         return Vector3f(xDimLen, yDimLen, zDimLen)
     }
