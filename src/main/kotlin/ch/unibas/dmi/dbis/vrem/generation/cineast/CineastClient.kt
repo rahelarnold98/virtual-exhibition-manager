@@ -38,7 +38,7 @@ object CineastClient {
             return arrayListOf()
         }
 
-        return ids.content.map { o -> o.objectId + SEGMENT_SUFFIX }.toCollection(ArrayList())
+        return ids.content.map { o -> o.objectid + SEGMENT_SUFFIX }.toCollection(ArrayList())
     }
 
     /**
