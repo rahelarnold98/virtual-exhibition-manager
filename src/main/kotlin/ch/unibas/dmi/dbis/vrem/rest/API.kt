@@ -106,10 +106,17 @@ class API : CliktCommand(name = "server", help = "Start the REST API endpoint") 
         val writer: VREMWriter = pair.second
 
         // Give Cineast enough time to process the request before timing out.
-        System.getProperties().setProperty(
-            "ch.unibas.dmi.dbis.vrem.cineast.client.baseUrl",
-            "${config.cineast.host}:${config.cineast.httpPort}"
-        )
+        if (config.cineast.enableSsl){
+            System.getProperties().setProperty(
+                    "ch.unibas.dmi.dbis.vrem.cineast.client.baseUrl",
+                    "https://${config.cineast.host}:${config.cineast.httpPort}"
+            )
+        } else {
+            System.getProperties().setProperty(
+                    "ch.unibas.dmi.dbis.vrem.cineast.client.baseUrl",
+                    "http://${config.cineast.host}:${config.cineast.httpPort}"
+            )
+        }
         ApiClient.builder.readTimeout(Duration.ofSeconds(config.cineast.queryTimeoutSeconds))
 
         // Handlers.
